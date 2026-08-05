@@ -12,6 +12,7 @@ export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
   const [telefono, setTelefono] = useState("");
   const [cif, setCif] = useState("");
   const [error, setError] = useState("");
+  const [regenerandoId, setRegenerandoId] = useState<string | null>(null);
 
   async function crear() {
     setError("");
@@ -47,6 +48,33 @@ export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
     alert("Enlace del portal copiado:\n\n" + url);
   }
 
+  async function regenerarToken(c: Cliente) {
+    if (
+      !confirm(
+        `¿Regenerar el enlace del portal de ${c.nombre}?\n\nEl enlace anterior dejará de funcionar de inmediato. Cualquiera que lo tuviera guardado o reenviado ya no podrá usarlo.`
+      )
+    )
+      return;
+
+    setRegenerandoId(c.id);
+    const { data, error } = await supabase.rpc("regenerar_token_portal", {
+      p_cliente_id: c.id,
+    });
+    setRegenerandoId(null);
+
+    if (error) {
+      alert(`No se pudo regenerar el token: ${error.message}`);
+      return;
+    }
+
+    const actualizado = data as Cliente;
+    setClientes(clientes.map((x) => (x.id === c.id ? { ...x, ...actualizado } : x)));
+
+    const url = `${window.location.origin}/portal?token=${actualizado.token_portal}`;
+    navigator.clipboard.writeText(url);
+    alert("Token regenerado. Nuevo enlace copiado:\n\n" + url);
+  }
+
   return (
     <div>
       <div className="card" style={{ marginBottom: "1.25rem" }}>
@@ -74,9 +102,21 @@ export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
                 <div className="muted" style={{ fontSize: "0.82rem" }}>
                   {c.email}{c.telefono ? ` · ${c.telefono}` : ""}{c.cif ? ` · ${c.cif}` : ""}
                 </div>
+                {c.token_generado_en && (
+                  <div className="muted" style={{ fontSize: "0.74rem", marginTop: 2 }}>
+                    Token generado: {new Date(c.token_generado_en).toLocaleString("es-ES")}
+                  </div>
+                )}
               </div>
-              <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0 }}>
+              <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
                 <button className="btn btn-ghost btn-sm" onClick={() => copiarPortal(c)}>Enlace portal</button>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  disabled={regenerandoId === c.id}
+                  onClick={() => regenerarToken(c)}
+                >
+                  {regenerandoId === c.id ? "Regenerando…" : "Regenerar token"}
+                </button>
                 <button className="btn btn-danger btn-sm" onClick={() => borrar(c.id)}>Eliminar</button>
               </div>
             </div>

@@ -64,7 +64,11 @@ export default function Historial() {
     (async () => {
       const [primeraPagina, { data: clis }, { data: bns }] = await Promise.all([
         cargarPagina(0, filtroCliente, filtroMes),
-        supabase.from("clientes").select("*").order("nombre"),
+        // Columnas explícitas: esta pantalla la ve cualquier técnico, no solo
+        // admin, y "clientes" tiene token_portal (el token del portal de
+        // autoservicio). select("*") lo traería al navegador de cualquiera
+        // con sesión; aquí solo hace falta el nombre para el filtro.
+        supabase.from("clientes").select("id, nombre").order("nombre"),
         supabase.from("bonos").select("*"),
       ]);
       setServicios(primeraPagina);
