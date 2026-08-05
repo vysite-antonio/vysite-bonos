@@ -1,0 +1,26 @@
+{
+  "name": "vysite-bonos",
+  "version": "4.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@supabase/ssr": "0.5.2",
+    "@supabase/supabase-js": "2.48.1",
+    "jspdf": "2.5.2",
+    "next": "^16.2.7",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "signature_pad": "5.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.7",
+    "@types/react": "19.0.7",
+    "@types/react-dom": "19.0.3",
+    "typescript": "5.7.3"
+  }
+}
