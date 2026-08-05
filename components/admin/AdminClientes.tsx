@@ -38,7 +38,22 @@ export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
 
   async function borrar(id: string) {
     if (!confirm("¿Eliminar este cliente? Se borrarán también sus bonos.")) return;
-    await supabase.from("clientes").delete().eq("id", id);
+    const { error } = await supabase.from("clientes").delete().eq("id", id);
+    if (error) {
+      // servicios.cliente_id es ON DELETE RESTRICT: si el cliente tiene algún
+      // parte de trabajo registrado (directamente o a través de sus bonos),
+      // el borrado falla aquí. Si no comprobáramos el error, la fila
+      // desaparecería igualmente de la pantalla aunque no se haya borrado de
+      // verdad en la base de datos.
+      if (error.code === "23503") {
+        alert(
+          "No se puede eliminar: este cliente tiene partes de trabajo registrados (directamente o en alguno de sus bonos). Para conservar el historial, no se permite borrar clientes con partes asociados."
+        );
+      } else {
+        alert(`No se pudo eliminar el cliente: ${error.message}`);
+      }
+      return;
+    }
     setClientes(clientes.filter((c) => c.id !== id));
   }
 

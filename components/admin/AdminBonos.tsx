@@ -56,7 +56,21 @@ export function AdminBonos({
 
   async function borrar(id: string) {
     if (!confirm("¿Eliminar este bono?")) return;
-    await supabase.from("bonos").delete().eq("id", id);
+    const { error } = await supabase.from("bonos").delete().eq("id", id);
+    if (error) {
+      // servicios.bono_id es ON DELETE RESTRICT: si el bono tiene algún
+      // parte de trabajo asignado, el borrado falla aquí. Sin comprobar el
+      // error, la fila desaparecería de la pantalla igualmente aunque el
+      // borrado real no se haya producido.
+      if (error.code === "23503") {
+        alert(
+          "No se puede eliminar: este bono tiene partes de trabajo asignados. Para conservar el historial, no se permite borrar bonos con partes asociados. Si quieres liberarlos, desasígnalos primero."
+        );
+      } else {
+        alert(`No se pudo eliminar el bono: ${error.message}`);
+      }
+      return;
+    }
     setBonos(bonos.filter((b) => b.id !== id));
   }
 
