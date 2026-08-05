@@ -28,18 +28,18 @@ export default async function PanelLayout({
   return (
     <>
       <PanelNav nombre={perfil.nombre} esAdmin={perfil.rol === "admin"} />
-      <div
-        className="panel-content"
-        style={{ maxWidth: 1100, margin: "0 auto", padding: "1.5rem 1.1rem 2.5rem" }}
-      >
-        {children}
-      </div>
+      <div className="panel-content">{children}</div>
       <style>{`
-        /* En móvil/tablet hay que dejar hueco debajo para que la barra de
-           navegación inferior (fija) no tape lo último del contenido. */
-        .panel-content { padding-bottom: calc(1.5rem + var(--tabbar-h) + env(safe-area-inset-bottom)); }
+        /* La navegación está toda arriba, así que abajo no hay nada fijo que
+           pueda tapar el contenido: basta el margen de seguridad del área
+           segura del móvil (barra de gestos del iPhone). */
+        .panel-content {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 1.5rem 1.1rem calc(2.5rem + env(safe-area-inset-bottom));
+        }
         @media (min-width: 860px) {
-          .panel-content { padding: 2rem 1.5rem 4rem !important; }
+          .panel-content { padding: 2rem 1.5rem 4rem; }
         }
       `}</style>
     </>

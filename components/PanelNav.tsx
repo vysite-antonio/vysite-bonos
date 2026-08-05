@@ -35,15 +35,17 @@ export function PanelNav({ nombre, esAdmin }: Props) {
 
   return (
     <>
-      {/* Cabecera: logo + (nav en escritorio) + usuario. En móvil/tablet la
-          navegación vive en la barra inferior, más cómoda para el pulgar. */}
+      {/* Toda la navegación vive arriba, en una única barra fija. Antes había
+          una barra inferior que tapaba el último elemento de cada pantalla
+          (el botón de guardar el parte, sobre todo). Al subirla, la parte baja
+          de la pantalla queda libre y ningún botón queda oculto. */}
       <header className="panel-header">
         <div className="panel-header-inner">
-          <Link href="/panel" className="panel-logo">
+          <Link href="/panel" className="panel-logo" aria-label="Vysite · Inicio">
             <img src="/logo-vysite.png" alt="Vysite" />
           </Link>
 
-          <nav className="panel-nav-desktop">
+          <nav className="panel-nav" aria-label="Navegación principal">
             {enlaces.map((e) => {
               const activo = path === e.href;
               const Icono = ICONOS[e.href as keyof typeof ICONOS];
@@ -52,122 +54,158 @@ export function PanelNav({ nombre, esAdmin }: Props) {
                   key={e.href}
                   href={e.href}
                   className={`panel-nav-link${activo ? " activo" : ""}`}
+                  title={e.label}
+                  aria-label={e.label}
+                  aria-current={activo ? "page" : undefined}
                 >
-                  <Icono size={16} strokeWidth={2.25} />
-                  {e.label === "Nuevo" ? "Nuevo servicio" : e.label}
+                  <Icono size={19} strokeWidth={activo ? 2.5 : 2} />
+                  <span className="panel-nav-label">
+                    {e.label === "Nuevo" ? "Nuevo servicio" : e.label}
+                  </span>
                 </Link>
               );
             })}
           </nav>
 
           <div className="panel-user">
-            <span className="panel-avatar">{iniciales || "?"}</span>
-            <span className="muted panel-user-nombre">{nombre}</span>
+            <span className="panel-avatar" title={nombre}>
+              {iniciales || "?"}
+            </span>
             <form action="/auth/salir" method="post">
-              <button type="submit" className="btn btn-ghost btn-icon" title="Salir" aria-label="Salir">
-                <LogOut size={17} strokeWidth={2.25} />
+              <button
+                type="submit"
+                className="panel-salir"
+                title="Salir"
+                aria-label="Salir"
+              >
+                <LogOut size={18} strokeWidth={2.25} />
               </button>
             </form>
           </div>
         </div>
       </header>
 
-      {/* Barra inferior: solo móvil/tablet, navegación principal a un toque. */}
-      <nav className="panel-tabbar" aria-label="Navegación principal">
-        {enlaces.map((e) => {
-          const activo = path === e.href;
-          const Icono = ICONOS[e.href as keyof typeof ICONOS];
-          return (
-            <Link
-              key={e.href}
-              href={e.href}
-              className={`panel-tab${activo ? " activo" : ""}`}
-            >
-              <span className="panel-tab-icon">
-                <Icono size={21} strokeWidth={activo ? 2.5 : 2} />
-              </span>
-              <span className="panel-tab-label">{e.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
       <style>{`
         .panel-header {
-          border-bottom: 1px solid var(--line);
-          background: rgba(17, 28, 48, 0.72);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
           position: sticky;
           top: 0;
-          z-index: 20;
+          z-index: 30;
+          background: rgba(11, 18, 33, 0.92);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border-bottom: 1px solid var(--line);
           padding-top: env(safe-area-inset-top);
         }
         .panel-header-inner {
           max-width: 1100px;
           margin: 0 auto;
-          padding: 0.75rem 1.25rem;
           display: flex;
           align-items: center;
-          gap: 1.25rem;
-          min-height: 56px;
+          gap: 0.5rem;
+          padding: 0.45rem 0.7rem;
+          min-height: 54px;
         }
+
         .panel-logo {
           display: flex;
           align-items: center;
-          text-decoration: none;
           flex-shrink: 0;
+          text-decoration: none;
+          padding: 0.25rem;
+          -webkit-tap-highlight-color: transparent;
         }
         .panel-logo img {
-          height: 26px;
+          height: 21px;
           width: auto;
           display: block;
         }
-        .panel-nav-desktop { display: none; flex: 1; gap: 0.3rem; }
-        .panel-nav-link {
-          display: inline-flex; align-items: center; gap: 0.45rem;
-          font-size: 0.85rem; font-weight: 600; padding: 0.55rem 0.85rem;
-          border-radius: var(--r-sm); text-decoration: none;
-          color: var(--text-mute); transition: all 0.15s ease;
-        }
-        .panel-nav-link:hover { color: var(--text); background: var(--surface-2); }
-        .panel-nav-link.activo { color: var(--text); background: var(--surface-2); }
-        .panel-user { display: flex; align-items: center; gap: 0.65rem; margin-left: auto; }
-        .panel-avatar {
-          width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-          background: linear-gradient(135deg, var(--brand), var(--brand-hi));
-          display: flex; align-items: center; justify-content: center;
-          font-size: 0.72rem; font-weight: 700; color: #fff;
-        }
-        .panel-user-nombre { font-size: 0.8rem; display: none; }
 
-        .panel-tabbar {
-          position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
-          display: flex; justify-content: space-around;
-          background: rgba(13, 21, 38, 0.92);
-          backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-          border-top: 1px solid var(--line);
-          padding: 0.4rem 0.4rem calc(0.4rem + env(safe-area-inset-bottom));
+        /* Menú compacto: en móvil solo iconos (el texto se oculta) para que
+           quepa todo en una línea junto al logo; en escritorio se despliega
+           con etiqueta. overflow-x como red de seguridad en pantallas muy
+           estrechas. */
+        .panel-nav {
+          display: flex;
+          align-items: center;
+          gap: 0.1rem;
+          margin-left: auto;
+          overflow-x: auto;
+          scrollbar-width: none;
         }
-        .panel-tab {
-          display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
-          flex: 1; padding: 0.35rem 0.25rem; border-radius: var(--r-sm);
-          text-decoration: none; color: var(--text-mute); min-height: 48px;
-          justify-content: center; -webkit-tap-highlight-color: transparent;
-          transition: color 0.15s ease;
+        .panel-nav::-webkit-scrollbar { display: none; }
+
+        .panel-nav-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.45rem;
+          flex-shrink: 0;
+          width: 42px;
+          height: 42px;
+          border-radius: var(--r-sm);
+          text-decoration: none;
+          color: var(--text-mute);
+          transition: color 0.15s ease, background 0.15s ease;
+          -webkit-tap-highlight-color: transparent;
         }
-        .panel-tab-icon {
-          display: flex; align-items: center; justify-content: center;
-          width: 34px; height: 26px; border-radius: 99px; transition: background 0.15s ease;
+        .panel-nav-link:active { transform: scale(0.94); }
+        .panel-nav-link.activo {
+          color: var(--brand-hi);
+          background: var(--brand-dim);
         }
-        .panel-tab.activo { color: var(--brand-hi); }
-        .panel-tab.activo .panel-tab-icon { background: var(--brand-dim); }
-        .panel-tab-label { font-size: 0.68rem; font-weight: 600; }
+        .panel-nav-label {
+          display: none;
+          font-size: 0.85rem;
+          font-weight: 600;
+          white-space: nowrap;
+        }
+
+        .panel-user {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          flex-shrink: 0;
+          margin-left: 0.25rem;
+          padding-left: 0.5rem;
+          border-left: 1px solid var(--line);
+        }
+        .panel-avatar {
+          display: none;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--brand), var(--brand-hi));
+          align-items: center;
+          justify-content: center;
+          font-size: 0.68rem;
+          font-weight: 700;
+          color: #fff;
+          flex-shrink: 0;
+        }
+        .panel-salir {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 42px;
+          height: 42px;
+          border: none;
+          background: none;
+          border-radius: var(--r-sm);
+          color: var(--text-mute);
+          cursor: pointer;
+          transition: color 0.15s ease, background 0.15s ease;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .panel-salir:hover { color: #fca5a5; background: var(--surface-2); }
+        .panel-salir:active { transform: scale(0.94); }
 
         @media (min-width: 860px) {
-          .panel-nav-desktop { display: flex; }
-          .panel-user-nombre { display: inline; }
-          .panel-tabbar { display: none; }
+          .panel-header-inner { padding: 0.5rem 1.25rem; gap: 1rem; }
+          .panel-logo img { height: 24px; }
+          .panel-nav { gap: 0.25rem; }
+          .panel-nav-link { width: auto; padding: 0 0.9rem; }
+          .panel-nav-label { display: inline; }
+          .panel-avatar { display: flex; }
         }
       `}</style>
     </>

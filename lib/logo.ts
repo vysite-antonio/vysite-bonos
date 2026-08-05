@@ -1,0 +1,53 @@
+// Logo de Vysite embebido en base64.
+//
+// Va incrustado en el bundle a propósito, no cargado desde /logo-vysite.png:
+// jsPDF necesita los bytes de la imagen de forma síncrona al construir el
+// documento, y el parte se genera en el móvil del técnico justo después de
+// firmar, a veces con cobertura mala. Embebido, el PDF sale siempre igual
+// aunque la red falle en ese momento.
+//
+// Es el mismo PNG que public/logo-vysite.png (300x56, ~2.9 KB). SI CAMBIAS
+// EL LOGO, REGENERA ESTA CONSTANTE junto con el archivo de public/.
+export const LOGO_VYSITE_PNG =
+  "data:image/png;base64,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";
+
+// Proporción del PNG (ancho / alto), para escalarlo en el PDF sin deformarlo.
+export const LOGO_VYSITE_RATIO = 300 / 56;

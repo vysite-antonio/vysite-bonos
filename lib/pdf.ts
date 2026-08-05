@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import type { Servicio } from "./types";
+import { LOGO_VYSITE_PNG, LOGO_VYSITE_RATIO } from "./logo";
 
 interface DatosPDF {
   servicio: Servicio;
@@ -61,10 +62,19 @@ export function generarPartePDF(d: DatosPDF): jsPDF {
   doc.setFillColor(...C.blue);
   doc.rect(0, 38, pw, 1.5, "F");
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(28);
-  doc.setTextColor(...C.blue);
-  doc.text("Vysite", m, 19);
+  // Logo real de Vysite (blanco sobre la cabecera azul oscuro). Si por lo que
+  // sea la imagen no se pudiera pintar, caemos al texto de siempre para no
+  // dejar la cabecera vacía.
+  const logoW = 40;
+  const logoH = logoW / LOGO_VYSITE_RATIO;
+  try {
+    doc.addImage(LOGO_VYSITE_PNG, "PNG", m, 13, logoW, logoH);
+  } catch {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(28);
+    doc.setTextColor(...C.blue);
+    doc.text("Vysite", m, 19);
+  }
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(148, 163, 184);
