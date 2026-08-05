@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 import { FirmaPad, type FirmaHandle } from "@/components/FirmaPad";
 import { generarPartePDF } from "@/lib/pdf";
-import type { Cliente, Bono, Perfil } from "@/lib/types";
+import { calcularHorasFacturables, minutosEntre } from "@/lib/horas";
+import type { Cliente, Bono, Perfil, Modalidad } from "@/lib/types";
 
 interface Props {
   clientes: Cliente[];
@@ -29,6 +30,7 @@ export function FormNuevoServicio({
 
   const [trabajadorId, setTrabajadorId] = useState(usuarioActual.id);
   const [tipo, setTipo] = useState("");
+  const [modalidad, setModalidad] = useState<Modalidad>("presencial");
   const [clienteId, setClienteId] = useState("");
   const [bonoId, setBonoId] = useState("");
   const [fecha, setFecha] = useState(hoy);
@@ -44,11 +46,16 @@ export function FormNuevoServicio({
     [bonos, clienteId]
   );
 
-  const horas = useMemo(() => {
-    const ini = new Date(`2000-01-01T${inicio}`);
-    const f = new Date(`2000-01-01T${fin}`);
-    return Math.max(0, (f.getTime() - ini.getTime()) / 3600000);
-  }, [inicio, fin]);
+  // Minutos brutos entre entrada y salida (puede ser <= 0 si el horario es inválido).
+  const minutos = useMemo(() => minutosEntre(inicio, fin), [inicio, fin]);
+
+  // Horas que realmente se van a descontar del bono, aplicando la misma regla
+  // que calcular_horas_facturables en SQL (ver lib/horas.ts). Así lo que ve el
+  // técnico en pantalla coincide con lo que se factura de verdad.
+  const horas = useMemo(
+    () => calcularHorasFacturables(minutos, modalidad),
+    [minutos, modalidad]
+  );
 
   async function guardar(e: React.FormEvent) {
     e.preventDefault();
@@ -90,6 +97,7 @@ export function FormNuevoServicio({
       p_trabajador_id: trabajadorId,
       p_trabajador_nombre: trabajador?.nombre ?? usuarioActual.nombre,
       p_tipo: tipo,
+      p_modalidad: modalidad,
       p_fecha: fecha,
       p_hora_inicio: inicio,
       p_hora_fin: fin,
@@ -97,6 +105,7 @@ export function FormNuevoServicio({
       p_material: material.trim() || null,
       p_firma_cliente: firmaCliente.current?.dataURL() ?? null,
       p_firma_tecnico: firmaTecnico.current?.dataURL() ?? null,
+      p_firmante_nombre: null,
       p_creado_por: usuarioActual.email,
     });
 
@@ -158,6 +167,21 @@ export function FormNuevoServicio({
               <option value="marketing">Servicio de Marketing</option>
             </select>
           </div>
+        </div>
+
+        <div className="fila-2">
+          <div className="field">
+            <label>Modalidad *</label>
+            <select
+              className="input"
+              value={modalidad}
+              onChange={(e) => setModalidad(e.target.value as Modalidad)}
+            >
+              <option value="presencial">Presencial</option>
+              <option value="remota">Remota</option>
+            </select>
+          </div>
+          <div className="field" />
         </div>
 
         <div className="fila-2">

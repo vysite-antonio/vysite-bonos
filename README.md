@@ -48,5 +48,31 @@ Vercel te dará un registro CNAME que hay que crear en el panel DNS de Hostsuar.
 
 - `app/` — páginas (login, panel, portal)
 - `components/` — UI reutilizable (firmas, navegación, admin)
-- `lib/` — clientes Supabase, generación de PDF, tipos
+- `lib/` — clientes Supabase, generación de PDF, tipos, regla de horas
 - Edge Functions (ya desplegadas en Supabase): `portal-cliente`, `admin-usuarios`
+
+## ⚠️ Regla de facturación — vive en DOS sitios, tócalos juntos
+
+Las horas facturables de un servicio (mínimo 1h presencial, bloques de 30 min,
+10 min de cortesía; bloques de 30 min desde el primer minuto en remota) se
+calculan en dos implementaciones independientes que **deben dar siempre el
+mismo resultado**:
+
+1. **`calcular_horas_facturables`** (función SQL en Supabase) — es la fuente
+   de verdad. Es la que de verdad descuenta horas de los bonos, invocada
+   desde `registrar_servicio` y `registrar_servicio_suelto`.
+2. **`calcularHorasFacturables`** en `lib/horas.ts` — usada solo para
+   mostrarle al técnico, en `components/FormNuevoServicio.tsx`, una
+   previsualización de las horas que se le van a descontar antes de guardar.
+
+**Si cambias la regla, cambia las dos.** Después de tocar cualquiera de las
+dos, ejecuta:
+
+```bash
+npm test
+```
+
+`lib/horas.test.ts` cubre los casos límite de ambas modalidades. Los valores
+esperados de ese archivo se verificaron ejecutando `calcular_horas_facturables`
+directamente en Supabase — si cambias la regla SQL, vuelve a verificar los
+números ahí antes de actualizar el test, no al revés.
