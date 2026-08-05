@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { generarPartePDF } from "@/lib/pdf";
+import { resolverFirmaParaPdf } from "@/lib/firmas";
 import type { Servicio, Cliente, Bono } from "@/lib/types";
 
 const POR_PAGINA = 25;
@@ -119,9 +120,17 @@ export default function Historial() {
       return;
     }
 
+    // firma_cliente/firma_tecnico pueden ser una ruta de Storage (servicios
+    // nuevos) o, si quedara alguno, un dataURL base64 legado. resolverFirmaParaPdf
+    // distingue los dos casos y siempre devuelve un dataURL listo para el PDF.
+    const [firmaCliente, firmaTecnico] = await Promise.all([
+      resolverFirmaParaPdf(supabase, completo?.firma_cliente),
+      resolverFirmaParaPdf(supabase, completo?.firma_tecnico),
+    ]);
+
     const bono = bonos.find((b) => b.id === s.bono_id);
     const doc = generarPartePDF({
-      servicio: { ...s, firma_cliente: completo?.firma_cliente ?? null, firma_tecnico: completo?.firma_tecnico ?? null },
+      servicio: { ...s, firma_cliente: firmaCliente, firma_tecnico: firmaTecnico },
       clienteNombre: s.clientes?.nombre ?? "—",
       numFactura: bono?.num_factura ?? s.bonos?.num_factura ?? "—",
       horasRestantes: bono ? bono.horas_totales - bono.horas_usadas : 0,

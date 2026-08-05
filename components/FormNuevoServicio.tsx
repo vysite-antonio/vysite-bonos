@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase-browser";
 import { FirmaPad, type FirmaHandle } from "@/components/FirmaPad";
 import { generarPartePDF } from "@/lib/pdf";
 import { calcularHorasFacturables, minutosEntre } from "@/lib/horas";
+import { subirFirma } from "@/lib/firmas";
 import type { Cliente, Bono, Perfil, Modalidad } from "@/lib/types";
 
 interface Props {
@@ -91,6 +92,31 @@ export function FormNuevoServicio({
 
     const trabajador = trabajadores.find((t) => t.id === trabajadorId);
 
+    // Las firmas se capturan como dataURL (base64) en el FirmaPad, pero ya no
+    // se guardan así en la fila del servicio: se suben primero al bucket
+    // privado "firmas" en Storage y solo se guarda la ruta. Mantenemos los
+    // dataURL originales en memoria para generar el PDF de descarga inmediata
+    // sin tener que volver a pedirlos a Storage.
+    const firmaClienteDataUrl = firmaCliente.current?.dataURL() ?? null;
+    const firmaTecnicoDataUrl = firmaTecnico.current?.dataURL() ?? null;
+
+    let rutaFirmaCliente: string | null = null;
+    let rutaFirmaTecnico: string | null = null;
+    try {
+      if (firmaClienteDataUrl) {
+        rutaFirmaCliente = await subirFirma(supabase, firmaClienteDataUrl, clienteId);
+      }
+      if (firmaTecnicoDataUrl) {
+        rutaFirmaTecnico = await subirFirma(supabase, firmaTecnicoDataUrl, clienteId);
+      }
+    } catch (e) {
+      setError(
+        `No se pudieron subir las firmas: ${e instanceof Error ? e.message : String(e)}`
+      );
+      setGuardando(false);
+      return;
+    }
+
     const { data, error: rpcError } = await supabase.rpc("registrar_servicio", {
       p_bono_id: bonoId,
       p_cliente_id: clienteId,
@@ -103,8 +129,8 @@ export function FormNuevoServicio({
       p_hora_fin: fin,
       p_descripcion: descripcion.trim(),
       p_material: material.trim() || null,
-      p_firma_cliente: firmaCliente.current?.dataURL() ?? null,
-      p_firma_tecnico: firmaTecnico.current?.dataURL() ?? null,
+      p_firma_cliente: rutaFirmaCliente,
+      p_firma_tecnico: rutaFirmaTecnico,
       p_firmante_nombre: null,
       p_creado_por: usuarioActual.email,
     });
@@ -115,11 +141,18 @@ export function FormNuevoServicio({
       return;
     }
 
-    // Generar y descargar el PDF
+    // Generar y descargar el PDF. Usamos los dataURL de las firmas que ya
+    // teníamos en memoria (no las rutas de Storage que se acaban de guardar
+    // en `data`), así el parte se genera al instante sin pedir una URL
+    // firmada de vuelta a Storage.
     const cliente = clientes.find((c) => c.id === clienteId);
     try {
       const doc = generarPartePDF({
-        servicio: data,
+        servicio: {
+          ...data,
+          firma_cliente: firmaClienteDataUrl,
+          firma_tecnico: firmaTecnicoDataUrl,
+        },
         clienteNombre: cliente?.nombre ?? "—",
         numFactura: bono?.num_factura ?? "—",
         horasRestantes: (bono?.horas_totales ?? 0) - (bono?.horas_usadas ?? 0) - horas,
