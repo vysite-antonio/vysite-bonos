@@ -114,9 +114,9 @@ export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
         <div style={{ display: "grid", gap: "0.75rem" }}>
           {clientes.map((c) => (
             <div key={c.id} className="card" style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
-              <div>
-                <div style={{ fontWeight: 600 }}>{c.nombre}</div>
-                <div className="muted" style={{ fontSize: "0.82rem" }}>
+              <div style={{ minWidth: 0, flex: "1 1 200px" }}>
+                <div style={{ fontWeight: 600, overflowWrap: "anywhere" }}>{c.nombre}</div>
+                <div className="muted" style={{ fontSize: "0.82rem", overflowWrap: "anywhere" }}>
                   {c.email}{c.telefono ? ` · ${c.telefono}` : ""}{c.cif ? ` · ${c.cif}` : ""}
                 </div>
                 {c.token_generado_en && (

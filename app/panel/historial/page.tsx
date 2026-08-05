@@ -243,16 +243,17 @@ export default function Historial() {
                     marginBottom: "0.75rem",
                   }}
                 >
-                  <div>
+                  <div style={{ minWidth: 0, flex: "1 1 160px" }}>
                     <div
                       style={{
                         fontWeight: 600,
                         textDecoration: s.anulado ? "line-through" : "none",
+                        overflowWrap: "anywhere",
                       }}
                     >
                       {s.clientes?.nombre ?? "Cliente eliminado"}
                     </div>
-                    <div className="dato muted" style={{ fontSize: "0.78rem" }}>
+                    <div className="dato muted" style={{ fontSize: "0.78rem", overflowWrap: "anywhere" }}>
                       {s.num_parte}
                     </div>
                   </div>

@@ -111,11 +111,11 @@ export default async function Inicio() {
                     gap: "1rem",
                   }}
                 >
-                  <div>
-                    <div style={{ fontWeight: 600 }}>
+                  <div style={{ minWidth: 0, flex: "1 1 160px" }}>
+                    <div style={{ fontWeight: 600, overflowWrap: "anywhere" }}>
                       {b.clientes?.nombre ?? "Cliente eliminado"}
                     </div>
-                    <div className="dato muted" style={{ fontSize: "0.8rem" }}>
+                    <div className="dato muted" style={{ fontSize: "0.8rem", overflowWrap: "anywhere" }}>
                       Factura {b.num_factura}
                     </div>
                   </div>

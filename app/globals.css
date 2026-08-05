@@ -54,6 +54,13 @@
 
 html { -webkit-text-size-adjust: 100%; }
 
+/* Red de seguridad anti-overflow: en móvil basta un solo texto largo sin
+   espacios (email, referencia, URL) dentro de una fila flex para forzar
+   scroll horizontal de toda la página, porque por defecto un hijo flex no
+   se encoge por debajo del ancho de su contenido. overflow-x:hidden en
+   html/body corta cualquier desbordamiento residual que se nos escape. */
+html, body { overflow-x: hidden; }
+
 body {
   font-family: var(--font-ui);
   color: var(--text);
@@ -143,6 +150,11 @@ select.input { cursor: pointer; }
   background: linear-gradient(180deg, var(--surface) 0%, var(--bg-2) 100%);
   border: 1px solid var(--line); border-radius: var(--r);
   padding: 1.25rem; box-shadow: var(--shadow-sm);
+  min-width: 0;
+  /* overflow-wrap se hereda: cualquier texto largo sin espacios (email,
+     referencia, descripción pegada) dentro de la tarjeta puede romper de
+     línea en vez de forzar el ancho de la tarjeta más allá de la pantalla. */
+  overflow-wrap: anywhere;
 }
 .card-pad-lg { padding: 1.6rem; }
 @media (min-width: 640px) {

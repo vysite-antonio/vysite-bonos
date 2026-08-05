@@ -109,9 +109,9 @@ export function AdminBonos({
             return (
               <div key={b.id} className="card">
                 <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.75rem" }}>
-                  <div>
-                    <div style={{ fontWeight: 600 }}>{b.clientes?.nombre ?? "—"}</div>
-                    <div className="dato muted" style={{ fontSize: "0.8rem" }}>
+                  <div style={{ minWidth: 0, flex: "1 1 160px" }}>
+                    <div style={{ fontWeight: 600, overflowWrap: "anywhere" }}>{b.clientes?.nombre ?? "—"}</div>
+                    <div className="dato muted" style={{ fontSize: "0.8rem", overflowWrap: "anywhere" }}>
                       Factura {b.num_factura}
                       {b.precio ? ` · ${b.precio.toFixed(2)}€` : ""}
                     </div>

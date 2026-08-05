@@ -92,9 +92,9 @@ export function AdminUsuarios({ inicial }: { inicial: Perfil[] }) {
       <div style={{ display: "grid", gap: "0.75rem" }}>
         {usuarios.map((u) => (
           <div key={u.id} className="card" style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
-            <div>
-              <div style={{ fontWeight: 600 }}>{u.nombre}</div>
-              <div className="muted" style={{ fontSize: "0.82rem" }}>{roles[u.rol] ?? u.rol}</div>
+            <div style={{ minWidth: 0, flex: "1 1 160px" }}>
+              <div style={{ fontWeight: 600, overflowWrap: "anywhere" }}>{u.nombre}</div>
+              <div className="muted" style={{ fontSize: "0.82rem", overflowWrap: "anywhere" }}>{roles[u.rol] ?? u.rol}</div>
             </div>
             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
               <span className={`badge ${u.activo ? "badge-ok" : "badge-danger"}`}>
