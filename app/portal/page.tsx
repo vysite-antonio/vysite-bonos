@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { Gauge } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 
 interface PortalData {
@@ -78,10 +79,13 @@ function PortalContenido() {
         <h1 style={{ marginTop: 4 }}>{data.cliente.nombre}</h1>
       </div>
 
-      <section className="card card-pad-lg" style={{ marginBottom: "1.75rem" }}>
-        <div className="eyebrow">Horas disponibles</div>
-        <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem", marginTop: "0.5rem" }}>
-          <span className="dato" style={{ fontSize: "3rem", fontWeight: 700, lineHeight: 1 }}>
+      <section className="card card-pad-lg card-accent" style={{ marginBottom: "1.75rem" }}>
+        <div className="eyebrow">
+          <Gauge size={13} strokeWidth={2.5} />
+          Horas disponibles
+        </div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem", marginTop: "0.6rem", flexWrap: "wrap" }}>
+          <span className="dato" style={{ fontSize: "clamp(2.2rem, 10vw, 3rem)", fontWeight: 700, lineHeight: 1 }}>
             {horasDisp.toFixed(1)}
           </span>
           <span className="dato muted" style={{ fontSize: "1.1rem" }}>horas</span>

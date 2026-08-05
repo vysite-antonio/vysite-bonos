@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { UserPlus, Link2, RefreshCw, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 import type { Cliente } from "@/lib/types";
 
@@ -94,7 +95,7 @@ export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
     <div>
       <div className="card" style={{ marginBottom: "1.25rem" }}>
         <h3 style={{ marginBottom: "1rem" }}>Nuevo cliente</h3>
-        <div className="grid-form">
+        <div className="grid-2">
           <input className="input" placeholder="Nombre *" value={nombre} onChange={(e) => setNombre(e.target.value)} />
           <input className="input" placeholder="Email *" value={email} onChange={(e) => setEmail(e.target.value)} />
           <input className="input" placeholder="Teléfono" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
@@ -102,7 +103,8 @@ export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
         </div>
         {error && <div className="error-box" style={{ marginTop: "0.75rem" }}>{error}</div>}
         <button className="btn btn-primary" style={{ marginTop: "1rem" }} onClick={crear}>
-          + Añadir cliente
+          <UserPlus size={16} strokeWidth={2.25} />
+          Añadir cliente
         </button>
       </div>
 
@@ -111,7 +113,7 @@ export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
       ) : (
         <div style={{ display: "grid", gap: "0.75rem" }}>
           {clientes.map((c) => (
-            <div key={c.id} className="card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
+            <div key={c.id} className="card" style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
               <div>
                 <div style={{ fontWeight: 600 }}>{c.nombre}</div>
                 <div className="muted" style={{ fontSize: "0.82rem" }}>
@@ -124,25 +126,27 @@ export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
                 )}
               </div>
               <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                <button className="btn btn-ghost btn-sm" onClick={() => copiarPortal(c)}>Enlace portal</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => copiarPortal(c)}>
+                  <Link2 size={14} strokeWidth={2.25} />
+                  Enlace portal
+                </button>
                 <button
                   className="btn btn-ghost btn-sm"
                   disabled={regenerandoId === c.id}
                   onClick={() => regenerarToken(c)}
                 >
+                  <RefreshCw size={14} strokeWidth={2.25} />
                   {regenerandoId === c.id ? "Regenerando…" : "Regenerar token"}
                 </button>
-                <button className="btn btn-danger btn-sm" onClick={() => borrar(c.id)}>Eliminar</button>
+                <button className="btn btn-danger btn-sm" onClick={() => borrar(c.id)}>
+                  <Trash2 size={14} strokeWidth={2.25} />
+                  Eliminar
+                </button>
               </div>
             </div>
           ))}
         </div>
       )}
-
-      <style>{`
-        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-        @media (max-width: 640px) { .grid-form { grid-template-columns: 1fr; } }
-      `}</style>
     </div>
   );
 }

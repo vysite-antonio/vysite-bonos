@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PackagePlus, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 import type { Cliente, Bono } from "@/lib/types";
 
@@ -78,7 +79,7 @@ export function AdminBonos({
     <div>
       <div className="card" style={{ marginBottom: "1.25rem" }}>
         <h3 style={{ marginBottom: "1rem" }}>Nuevo bono</h3>
-        <div className="grid-bono">
+        <div className="grid-3">
           <select className="input" value={clienteId} onChange={(e) => setClienteId(e.target.value)}>
             <option value="">Cliente *</option>
             {clientes.map((c) => (
@@ -92,7 +93,8 @@ export function AdminBonos({
         </div>
         {error && <div className="error-box" style={{ marginTop: "0.75rem" }}>{error}</div>}
         <button className="btn btn-primary" style={{ marginTop: "1rem" }} onClick={crear}>
-          + Crear bono
+          <PackagePlus size={16} strokeWidth={2.25} />
+          Crear bono
         </button>
       </div>
 
@@ -118,7 +120,10 @@ export function AdminBonos({
                     <span className={`badge ${b.activo ? "badge-ok" : "badge-danger"}`}>
                       {b.activo ? "Activo" : "Agotado"}
                     </span>
-                    <button className="btn btn-danger btn-sm" onClick={() => borrar(b.id)}>Eliminar</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => borrar(b.id)}>
+                      <Trash2 size={14} strokeWidth={2.25} />
+                      Eliminar
+                    </button>
                   </div>
                 </div>
                 <div className="medidor">
@@ -134,11 +139,6 @@ export function AdminBonos({
           })}
         </div>
       )}
-
-      <style>{`
-        .grid-bono { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
-        @media (max-width: 640px) { .grid-bono { grid-template-columns: 1fr; } }
-      `}</style>
     </div>
   );
 }

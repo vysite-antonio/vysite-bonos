@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Mail, Lock, LogIn } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 
 export default function LoginPage() {
@@ -62,33 +63,39 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="card card-pad-lg" onSubmit={entrar}>
+        <form className="card card-pad-lg card-accent" onSubmit={entrar}>
           <div className="field">
             <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              className="input"
-              placeholder="tu@vysite.es"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="username"
-              required
-            />
+            <div className="input-group">
+              <Mail size={18} strokeWidth={2} />
+              <input
+                id="email"
+                type="email"
+                className="input"
+                placeholder="tu@vysite.es"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="username"
+                required
+              />
+            </div>
           </div>
 
           <div className="field">
             <label htmlFor="pw">Contraseña</label>
-            <input
-              id="pw"
-              type="password"
-              className="input"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
+            <div className="input-group">
+              <Lock size={18} strokeWidth={2} />
+              <input
+                id="pw"
+                type="password"
+                className="input"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+            </div>
           </div>
 
           {error && (
@@ -102,7 +109,12 @@ export default function LoginPage() {
             className="btn btn-primary btn-block"
             disabled={cargando}
           >
-            {cargando ? <span className="spinner" /> : "Entrar"}
+            {cargando ? <span className="spinner" /> : (
+              <>
+                <LogIn size={17} strokeWidth={2.25} />
+                Entrar
+              </>
+            )}
           </button>
         </form>
       </div>

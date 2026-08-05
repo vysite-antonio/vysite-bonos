@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 import SignaturePadLib from "signature_pad";
+import { Eraser } from "lucide-react";
 
 export interface FirmaHandle {
   estaVacia: () => boolean;
@@ -76,6 +77,7 @@ export const FirmaPad = forwardRef<FirmaHandle, Props>(function FirmaPad(
           className="btn btn-ghost btn-sm"
           onClick={() => padRef.current?.clear()}
         >
+          <Eraser size={14} strokeWidth={2.25} />
           Limpiar
         </button>
       </div>
@@ -83,9 +85,9 @@ export const FirmaPad = forwardRef<FirmaHandle, Props>(function FirmaPad(
         ref={canvasRef}
         style={{
           width: "100%",
-          height: 150,
+          height: "clamp(140px, 24vw, 190px)",
           background: "var(--surface-2)",
-          border: "2px dashed var(--line)",
+          border: "1.5px dashed var(--line)",
           borderRadius: "var(--r-sm)",
           touchAction: "none",
           cursor: "crosshair",

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { Clock, PenLine } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 import { FirmaPad, type FirmaHandle } from "@/components/FirmaPad";
 import { generarPartePDF } from "@/lib/pdf";
@@ -177,7 +178,7 @@ export function FormNuevoServicio({
       <h1 style={{ marginBottom: "1.5rem" }}>Nuevo servicio</h1>
 
       <div className="card" style={{ marginBottom: "1.25rem" }}>
-        <div className="fila-2">
+        <div className="grid-2">
           <div className="field">
             <label>Técnico *</label>
             <select
@@ -202,7 +203,7 @@ export function FormNuevoServicio({
           </div>
         </div>
 
-        <div className="fila-2">
+        <div className="grid-2">
           <div className="field">
             <label>Modalidad *</label>
             <select
@@ -217,7 +218,7 @@ export function FormNuevoServicio({
           <div className="field" />
         </div>
 
-        <div className="fila-2">
+        <div className="grid-2">
           <div className="field">
             <label>Cliente *</label>
             <select
@@ -253,7 +254,7 @@ export function FormNuevoServicio({
           </div>
         </div>
 
-        <div className="fila-3">
+        <div className="grid-3">
           <div className="field">
             <label>Fecha</label>
             <input
@@ -286,15 +287,17 @@ export function FormNuevoServicio({
         <div
           style={{
             display: "inline-flex",
-            alignItems: "baseline",
-            gap: "0.4rem",
-            padding: "0.5rem 0.85rem",
+            alignItems: "center",
+            gap: "0.5rem",
+            padding: "0.55rem 0.9rem",
             background: "var(--brand-dim)",
             borderRadius: "var(--r-sm)",
+            border: "1px solid var(--line-soft)",
           }}
         >
+          <Clock size={15} strokeWidth={2.25} color="var(--brand-hi)" />
           <span className="muted" style={{ fontSize: "0.8rem" }}>
-            Duración:
+            Duración facturable:
           </span>
           <span className="dato" style={{ fontWeight: 700, color: "var(--brand-hi)" }}>
             {horas.toFixed(2)}h
@@ -326,7 +329,10 @@ export function FormNuevoServicio({
       </div>
 
       <div className="card" style={{ marginBottom: "1.25rem" }}>
-        <h3 style={{ marginBottom: "1rem" }}>Firmas</h3>
+        <h3 style={{ marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.45rem" }}>
+          <PenLine size={15} strokeWidth={2.25} />
+          Firmas
+        </h3>
         <FirmaPad ref={firmaCliente} etiqueta="Firma del cliente" />
         <FirmaPad ref={firmaTecnico} etiqueta="Firma del técnico" />
       </div>
@@ -340,14 +346,6 @@ export function FormNuevoServicio({
       <button type="submit" className="btn btn-primary btn-block" disabled={guardando}>
         {guardando ? <span className="spinner" /> : "Guardar y generar parte"}
       </button>
-
-      <style>{`
-        .fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .fila-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
-        @media (max-width: 640px) {
-          .fila-2, .fila-3 { grid-template-columns: 1fr; }
-        }
-      `}</style>
     </form>
   );
 }

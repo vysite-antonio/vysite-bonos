@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { UserPlus, KeyRound, Power } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 import type { Perfil } from "@/lib/types";
 
@@ -68,7 +69,7 @@ export function AdminUsuarios({ inicial }: { inicial: Perfil[] }) {
     <div>
       <div className="card" style={{ marginBottom: "1.25rem" }}>
         <h3 style={{ marginBottom: "1rem" }}>Nuevo usuario</h3>
-        <div className="grid-form">
+        <div className="grid-2">
           <input className="input" placeholder="Nombre completo *" value={nombre} onChange={(e) => setNombre(e.target.value)} />
           <input className="input" placeholder="Email *" value={email} onChange={(e) => setEmail(e.target.value)} />
           <input className="input" type="password" placeholder="Contraseña *" value={password} onChange={(e) => setPassword(e.target.value)} />
@@ -79,34 +80,38 @@ export function AdminUsuarios({ inicial }: { inicial: Perfil[] }) {
         </div>
         {error && <div className="error-box" style={{ marginTop: "0.75rem" }}>{error}</div>}
         <button className="btn btn-primary" style={{ marginTop: "1rem" }} onClick={crear} disabled={ocupado}>
-          {ocupado ? <span className="spinner" /> : "+ Crear usuario"}
+          {ocupado ? <span className="spinner" /> : (
+            <>
+              <UserPlus size={16} strokeWidth={2.25} />
+              Crear usuario
+            </>
+          )}
         </button>
       </div>
 
       <div style={{ display: "grid", gap: "0.75rem" }}>
         {usuarios.map((u) => (
-          <div key={u.id} className="card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
+          <div key={u.id} className="card" style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
             <div>
               <div style={{ fontWeight: 600 }}>{u.nombre}</div>
               <div className="muted" style={{ fontSize: "0.82rem" }}>{roles[u.rol] ?? u.rol}</div>
             </div>
-            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexShrink: 0 }}>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
               <span className={`badge ${u.activo ? "badge-ok" : "badge-danger"}`}>
                 {u.activo ? "Activo" : "Inactivo"}
               </span>
-              <button className="btn btn-ghost btn-sm" onClick={() => cambiarPassword(u)}>Contraseña</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => cambiarPassword(u)}>
+                <KeyRound size={14} strokeWidth={2.25} />
+                Contraseña
+              </button>
               <button className="btn btn-ghost btn-sm" onClick={() => alternarEstado(u)}>
+                <Power size={14} strokeWidth={2.25} />
                 {u.activo ? "Desactivar" : "Activar"}
               </button>
             </div>
           </div>
         ))}
       </div>
-
-      <style>{`
-        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-        @media (max-width: 640px) { .grid-form { grid-template-columns: 1fr; } }
-      `}</style>
     </div>
   );
 }

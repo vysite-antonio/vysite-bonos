@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { Download, Ban } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 import { generarPartePDF } from "@/lib/pdf";
 import { resolverFirmaParaPdf } from "@/lib/firmas";
@@ -184,7 +185,7 @@ export default function Historial() {
       <h1 style={{ marginBottom: "1.5rem" }}>Historial de servicios</h1>
 
       <div className="card" style={{ marginBottom: "1.25rem" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+        <div className="grid-2">
           <div className="field" style={{ marginBottom: 0 }}>
             <label>Cliente</label>
             <select
@@ -249,10 +250,11 @@ export default function Historial() {
                       {s.num_parte}
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexShrink: 0 }}>
+                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
                     {s.anulado && <span className="badge badge-danger">ANULADO</span>}
                     <button className="btn btn-ghost btn-sm" onClick={() => descargarPDF(s)}>
-                      Descargar PDF
+                      <Download size={14} strokeWidth={2.25} />
+                      PDF
                     </button>
                     {esAdmin && !s.anulado && (
                       <button
@@ -260,7 +262,14 @@ export default function Historial() {
                         disabled={anulandoId === s.id}
                         onClick={() => anular(s)}
                       >
-                        {anulandoId === s.id ? "Anulando…" : "Anular"}
+                        {anulandoId === s.id ? (
+                          "Anulando…"
+                        ) : (
+                          <>
+                            <Ban size={14} strokeWidth={2.25} />
+                            Anular
+                          </>
+                        )}
                       </button>
                     )}
                   </div>

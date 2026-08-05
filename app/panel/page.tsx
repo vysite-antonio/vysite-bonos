@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Gauge, PlusCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase-server";
 import type { Bono } from "@/lib/types";
 
@@ -25,19 +26,23 @@ export default async function Inicio() {
   return (
     <>
       {/* HÉROE: medidor agregado de horas */}
-      <section className="card card-pad-lg" style={{ marginBottom: "1.75rem" }}>
-        <div className="eyebrow">Horas disponibles en bonos activos</div>
+      <section className="card card-pad-lg card-accent" style={{ marginBottom: "1.75rem" }}>
+        <div className="eyebrow">
+          <Gauge size={13} strokeWidth={2.5} />
+          Horas disponibles en bonos activos
+        </div>
         <div
           style={{
             display: "flex",
             alignItems: "baseline",
             gap: "0.5rem",
-            margin: "0.5rem 0 1.25rem",
+            margin: "0.6rem 0 1.35rem",
+            flexWrap: "wrap",
           }}
         >
           <span
             className="dato"
-            style={{ fontSize: "3.5rem", fontWeight: 700, lineHeight: 1 }}
+            style={{ fontSize: "clamp(2.4rem, 11vw, 3.5rem)", fontWeight: 700, lineHeight: 1 }}
           >
             {horasDisponibles.toFixed(1)}
           </span>
@@ -74,11 +79,13 @@ export default async function Inicio() {
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: "1rem",
+          gap: "1rem",
         }}
       >
         <h2>Bonos por cliente</h2>
         <Link href="/panel/nuevo-servicio" className="btn btn-primary btn-sm">
-          + Registrar servicio
+          <PlusCircle size={16} strokeWidth={2.25} />
+          Registrar servicio
         </Link>
       </div>
 
