@@ -46,19 +46,12 @@ export default function LoginPage() {
     >
       <div style={{ width: "100%", maxWidth: 400 }}>
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <div
-            style={{
-              fontSize: "2.4rem",
-              fontWeight: 800,
-              letterSpacing: "-0.03em",
-              background: "linear-gradient(135deg, var(--brand), var(--brand-hi))",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Vysite
-          </div>
-          <p className="muted" style={{ fontSize: "0.85rem", marginTop: 4 }}>
+          <img
+            src="/logo-vysite.png"
+            alt="Vysite"
+            style={{ height: 40, width: "auto", margin: "0 auto" }}
+          />
+          <p className="muted" style={{ fontSize: "0.85rem", marginTop: 12 }}>
             Gestión de bonos de horas
           </p>
         </div>

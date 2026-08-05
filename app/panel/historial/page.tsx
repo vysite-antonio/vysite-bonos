@@ -64,7 +64,24 @@ export default function Historial() {
 
   useEffect(() => {
     (async () => {
-      const [primeraPagina, { data: clis }, { data: bns }] = await Promise.all([
+      // El rol de admin depende de una consulta encadenada (usuario -> perfil),
+      // pero no hace falta esperar a que termine el resto para lanzarla: se
+      // dispara a la vez que las otras tres consultas en vez de después,
+      // ahorrando una ida y vuelta completa al servidor en cada carga.
+      const esAdminPromise = (async () => {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) return false;
+        const { data: perfil } = await supabase
+          .from("profiles")
+          .select("rol")
+          .eq("id", user.id)
+          .single();
+        return perfil?.rol === "admin";
+      })();
+
+      const [primeraPagina, { data: clis }, { data: bns }, esAdminResultado] = await Promise.all([
         cargarPagina(0, filtroCliente, filtroMes),
         // Columnas explícitas: esta pantalla la ve cualquier técnico, no solo
         // admin, y "clientes" tiene token_portal (el token del portal de
@@ -72,25 +89,14 @@ export default function Historial() {
         // con sesión; aquí solo hace falta el nombre para el filtro.
         supabase.from("clientes").select("id, nombre").order("nombre"),
         supabase.from("bonos").select("*"),
+        esAdminPromise,
       ]);
       setServicios(primeraPagina);
       setHayMas(primeraPagina.length === POR_PAGINA);
       setPagina(0);
       setClientes((clis ?? []) as Cliente[]);
       setBonos((bns ?? []) as Bono[]);
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        const { data: perfil } = await supabase
-          .from("profiles")
-          .select("rol")
-          .eq("id", user.id)
-          .single();
-        setEsAdmin(perfil?.rol === "admin");
-      }
-
+      setEsAdmin(esAdminResultado);
       setCargando(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -96,7 +96,7 @@ export function AdminUsuarios({ inicial }: { inicial: Perfil[] }) {
               <div style={{ fontWeight: 600 }}>{u.nombre}</div>
               <div className="muted" style={{ fontSize: "0.82rem" }}>{roles[u.rol] ?? u.rol}</div>
             </div>
-            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
               <span className={`badge ${u.activo ? "badge-ok" : "badge-danger"}`}>
                 {u.activo ? "Activo" : "Inactivo"}
               </span>

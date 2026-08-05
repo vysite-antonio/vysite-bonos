@@ -108,7 +108,7 @@ export function AdminBonos({
             const nivel = pct > 85 ? "danger" : pct > 65 ? "warn" : "";
             return (
               <div key={b.id} className="card">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.75rem" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.75rem" }}>
                   <div>
                     <div style={{ fontWeight: 600 }}>{b.clientes?.nombre ?? "—"}</div>
                     <div className="dato muted" style={{ fontSize: "0.8rem" }}>
@@ -116,7 +116,7 @@ export function AdminBonos({
                       {b.precio ? ` · ${b.precio.toFixed(2)}€` : ""}
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexShrink: 0 }}>
+                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
                     <span className={`badge ${b.activo ? "badge-ok" : "badge-danger"}`}>
                       {b.activo ? "Activo" : "Agotado"}
                     </span>

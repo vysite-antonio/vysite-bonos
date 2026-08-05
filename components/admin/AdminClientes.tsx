@@ -125,7 +125,7 @@ export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
                   </div>
                 )}
               </div>
-              <div style={{ display: "flex", gap: "0.5rem", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
+              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
                 <button className="btn btn-ghost btn-sm" onClick={() => copiarPortal(c)}>
                   <Link2 size={14} strokeWidth={2.25} />
                   Enlace portal

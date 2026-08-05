@@ -40,7 +40,7 @@ export function PanelNav({ nombre, esAdmin }: Props) {
       <header className="panel-header">
         <div className="panel-header-inner">
           <Link href="/panel" className="panel-logo">
-            Vysite
+            <img src="/logo-vysite.png" alt="Vysite" />
           </Link>
 
           <nav className="panel-nav-desktop">
@@ -113,15 +113,15 @@ export function PanelNav({ nombre, esAdmin }: Props) {
           min-height: 56px;
         }
         .panel-logo {
-          font-weight: 800;
-          font-size: 1.15rem;
-          letter-spacing: -0.02em;
-          background: linear-gradient(135deg, var(--brand-hi), var(--brand));
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
+          display: flex;
+          align-items: center;
           text-decoration: none;
           flex-shrink: 0;
+        }
+        .panel-logo img {
+          height: 26px;
+          width: auto;
+          display: block;
         }
         .panel-nav-desktop { display: none; flex: 1; gap: 0.3rem; }
         .panel-nav-link {
