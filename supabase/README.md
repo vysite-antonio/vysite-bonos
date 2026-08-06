@@ -19,6 +19,19 @@ de verdad sigue siendo el propio Supabase, no esta carpeta.
   sincronizada**: si editas una función en el panel de Supabase, copia el
   resultado aquí, porque si no el único sitio donde existe es la nube.
 
+## Envío de emails (Brevo)
+
+`enviar-parte` y `enviar-resumen` mandan correos vía Brevo (`api.brevo.com/v3/smtp/email`).
+Antes usaban Resend; se migraron el 2026-08-06 sin tocar el esquema, porque la
+API key y el remitente ya vivían fuera del código, en la tabla `config`
+(fila `clave = 'email'`, columna `valor` jsonb con `brevo_api_key`,
+`remitente_nombre`, `remitente_email`, `asunto`, `plantilla_html`).
+
+Esa fila se edita desde Admin > Ajustes (`components/admin/AdminConfig.tsx`),
+no hace falta tocar la base de datos a mano. `enviar-parte` se invoca sola al
+guardar un parte nuevo (si el cliente tiene email en su ficha); también sirve
+para el botón "Enviar prueba" de Ajustes, sin PDF adjunto.
+
 ## Recordatorio sobre la regla de facturación
 
 Las horas facturables se calculan en dos sitios que tienen que decir siempre lo

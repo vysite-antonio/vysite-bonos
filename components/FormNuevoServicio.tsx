@@ -147,6 +147,7 @@ export function FormNuevoServicio({
     // en `data`), así el parte se genera al instante sin pedir una URL
     // firmada de vuelta a Storage.
     const cliente = clientes.find((c) => c.id === clienteId);
+    const nombreArchivo = `${data.num_parte}_${(cliente?.nombre ?? "cliente").replace(/\s/g, "_")}.pdf`;
     try {
       const doc = generarPartePDF({
         servicio: {
@@ -159,7 +160,32 @@ export function FormNuevoServicio({
         horasRestantes: (bono?.horas_totales ?? 0) - (bono?.horas_usadas ?? 0) - horas,
         horasTotales: bono?.horas_totales ?? 0,
       });
-      doc.save(`${data.num_parte}_${(cliente?.nombre ?? "cliente").replace(/\s/g, "_")}.pdf`);
+      doc.save(nombreArchivo);
+
+      // Envío automático al cliente por email, sin bloquear el flujo: si no
+      // tiene email en su ficha, si Brevo no está configurado en Admin >
+      // Ajustes, o si falla por mala cobertura en campo, el parte ya está
+      // guardado y descargado igualmente. No se avisa al técnico del
+      // resultado a propósito, para no interrumpir el trabajo de campo.
+      if (cliente?.email) {
+        const pdfBase64 = doc.output("datauristring").split(",")[1];
+        supabase.functions
+          .invoke("enviar-parte", {
+            body: {
+              to: cliente.email,
+              pdf_base64: pdfBase64,
+              filename: nombreArchivo,
+              vars: {
+                cliente: cliente.nombre,
+                num_parte: data.num_parte,
+                fecha: fecha.split("-").reverse().join("/"),
+                horas: horas.toFixed(2),
+                tecnico: trabajador?.nombre ?? usuarioActual.nombre,
+              },
+            },
+          })
+          .catch((e) => console.error("No se pudo enviar el email del parte:", e));
+      }
     } catch (e) {
       console.error("Error generando PDF:", e);
     }
