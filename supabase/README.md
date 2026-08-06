@@ -32,6 +32,26 @@ no hace falta tocar la base de datos a mano. `enviar-parte` se invoca sola al
 guardar un parte nuevo (si el cliente tiene email en su ficha); también sirve
 para el botón "Enviar prueba" de Ajustes, sin PDF adjunto.
 
+## Papelera (bonos eliminados, partes anulados)
+
+`eliminar_bono` ya no borra la fila: pone `eliminado = true` y el bono
+desaparece de las vistas normales (dashboard, admin, selector de "nuevo
+servicio", portal del cliente) pero sigue existiendo, así que el historial de
+sus partes no se rompe. `restaurar_bono` lo devuelve a la normalidad.
+`purgar_papelera()` borra de verdad los que llevan más de 30 días en la
+papelera, saltándose (sin fallar) los que todavía tengan algún parte
+asociado — esos se quedan indefinidamente, restaurables, marcados en la UI
+como "no se pudo purgar".
+
+Los partes de trabajo no tienen un delete real, solo `anular_servicio`
+(ya existía). `reactivar_servicio` es su inverso: solo funciona dentro de los
+primeros 30 días desde la anulación: pasado ese plazo el parte se queda
+anulado para siempre (el registro nunca desaparece del historial, solo deja
+de poder recuperarse desde la papelera).
+
+`components/admin/AdminPapelera.tsx` (pestaña Admin > Papelera) llama a
+`purgar_papelera()` cada vez que se abre, antes de listar lo que hay.
+
 ## Recordatorio sobre la regla de facturación
 
 Las horas facturables se calculan en dos sitios que tienen que decir siempre lo

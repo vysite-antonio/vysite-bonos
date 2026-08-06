@@ -16,7 +16,7 @@ export default async function NuevoServicio() {
       // cualquier técnico, no solo admin, y solo hace falta el nombre para
       // el selector de cliente.
       supabase.from("clientes").select("id, nombre").order("nombre"),
-      supabase.from("bonos").select("*, clientes(nombre)").eq("activo", true),
+      supabase.from("bonos").select("*, clientes(nombre)").eq("activo", true).eq("eliminado", false),
       supabase.from("profiles").select("id, nombre, rol, activo").eq("activo", true).order("nombre"),
       supabase.from("profiles").select("nombre").eq("id", user!.id).single(),
     ]);

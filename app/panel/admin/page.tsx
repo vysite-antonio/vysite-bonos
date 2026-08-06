@@ -21,7 +21,11 @@ export default async function Admin() {
 
   const [{ data: clientes }, { data: bonos }, { data: usuarios }] = await Promise.all([
     supabase.from("clientes").select("*").order("nombre"),
-    supabase.from("bonos").select("*, clientes(nombre)").order("fecha_creacion", { ascending: false }),
+    supabase
+      .from("bonos")
+      .select("*, clientes(nombre)")
+      .eq("eliminado", false)
+      .order("fecha_creacion", { ascending: false }),
     supabase.from("profiles").select("id, nombre, rol, activo").order("nombre"),
   ]);
 

@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
     if (!cliente.email) return json({ error: "No tienes un email registrado en tu ficha" }, 400);
 
     const [{ data: bonos }, { count: nPartes }] = await Promise.all([
-      admin.from("bonos").select("horas_totales, horas_usadas").eq("cliente_id", cliente.id),
+      admin.from("bonos").select("horas_totales, horas_usadas").eq("cliente_id", cliente.id).eq("eliminado", false),
       admin.from("servicios").select("id", { count: "exact", head: true }).eq("cliente_id", cliente.id),
     ]);
     const totales = (bonos ?? []).reduce((s, b) => s + Number(b.horas_totales), 0);

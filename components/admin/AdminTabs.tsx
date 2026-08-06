@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Wallet, UserCog, Settings } from "lucide-react";
+import { Users, Wallet, UserCog, Settings, Trash2 } from "lucide-react";
 import { AdminClientes } from "@/components/admin/AdminClientes";
 import { AdminBonos } from "@/components/admin/AdminBonos";
 import { AdminUsuarios } from "@/components/admin/AdminUsuarios";
 import { AdminConfig } from "@/components/admin/AdminConfig";
+import { AdminPapelera } from "@/components/admin/AdminPapelera";
 import type { Cliente, Bono, Perfil } from "@/lib/types";
 
-type Tab = "clientes" | "bonos" | "usuarios" | "ajustes";
+type Tab = "clientes" | "bonos" | "usuarios" | "papelera" | "ajustes";
 
 export function AdminTabs({
   clientes,
@@ -25,6 +26,7 @@ export function AdminTabs({
     { id: "clientes", label: "Clientes", icono: Users },
     { id: "bonos", label: "Bonos", icono: Wallet },
     { id: "usuarios", label: "Usuarios", icono: UserCog },
+    { id: "papelera", label: "Papelera", icono: Trash2 },
     { id: "ajustes", label: "Ajustes", icono: Settings },
   ];
 
@@ -76,6 +78,7 @@ export function AdminTabs({
       {tab === "clientes" && <AdminClientes inicial={clientes} />}
       {tab === "bonos" && <AdminBonos clientes={clientes} inicial={bonos} />}
       {tab === "usuarios" && <AdminUsuarios inicial={usuarios} />}
+      {tab === "papelera" && <AdminPapelera />}
       {tab === "ajustes" && <AdminConfig />}
     </>
   );

@@ -11,6 +11,7 @@ export default async function Inicio() {
   const { data: bonos } = await supabase
     .from("bonos")
     .select("*, clientes(nombre)")
+    .eq("eliminado", false)
     .order("activo", { ascending: false })
     .order("fecha_creacion", { ascending: false });
 

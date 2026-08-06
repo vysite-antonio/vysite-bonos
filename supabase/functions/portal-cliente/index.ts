@@ -98,6 +98,7 @@ Deno.serve(async (req) => {
           "id, num_factura, horas_totales, horas_usadas, precio, fecha_creacion, fecha_caducidad, activo"
         )
         .eq("cliente_id", cliente.id)
+        .eq("eliminado", false)
         .order("fecha_creacion", { ascending: false }),
       supabase
         .from("servicios")

@@ -30,6 +30,12 @@ export interface Bono {
   fecha_caducidad: string | null;
   notas: string | null;
   activo: boolean;
+  // Papelera: true si un admin lo eliminó. La fila no se borra (para no
+  // romper el historial de sus partes); se filtra en las vistas normales y
+  // se recupera con restaurar_bono, o se purga de verdad a los 30 días.
+  eliminado: boolean;
+  eliminado_en: string | null;
+  eliminado_por: string | null;
   clientes?: { nombre: string } | null;
 }
 
