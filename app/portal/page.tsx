@@ -2,8 +2,10 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Gauge } from "lucide-react";
+import { Gauge, Download } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
+import { generarPartePDF } from "@/lib/pdf";
+import type { Servicio } from "@/lib/types";
 
 interface PortalData {
   cliente: { nombre: string; email: string };
@@ -27,8 +29,27 @@ interface PortalData {
     horas: number;
     descripcion: string;
     trabajador_nombre: string | null;
+    editado: boolean;
     bonos: { num_factura: string } | null;
   }[];
+}
+
+/** Descarga la imagen de una firma (URL firmada de vida corta que devuelve la
+ *  edge function) y la convierte al dataURL que jsPDF necesita. */
+async function aDataUrl(url: string | null): Promise<string | null> {
+  if (!url) return null;
+  if (url.startsWith("data:")) return url; // firmas antiguas, ya venían en base64
+  try {
+    const blob = await (await fetch(url)).blob();
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
 }
 
 function PortalContenido() {
@@ -38,6 +59,49 @@ function PortalContenido() {
   const [data, setData] = useState<PortalData | null>(null);
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(true);
+  const [descargandoId, setDescargandoId] = useState<string | null>(null);
+
+  // El PDF se arma en el navegador del cliente igual que en el panel, pero los
+  // datos (y sobre todo las firmas, que están en un bucket privado) los sirve
+  // la edge function solo para el parte pedido y validando que ese parte es
+  // realmente suyo.
+  async function descargarPDF(servicioId: string, numParte: string) {
+    setDescargandoId(servicioId);
+    try {
+      const { data: res, error: fnError } = await supabase.functions.invoke(
+        "portal-cliente",
+        { body: { token, parte_id: servicioId } }
+      );
+
+      if (fnError || res?.error) {
+        alert(res?.error ?? "No se pudo preparar el parte. Inténtalo de nuevo.");
+        return;
+      }
+
+      const [firmaCliente, firmaTecnico] = await Promise.all([
+        aDataUrl(res.firma_cliente),
+        aDataUrl(res.firma_tecnico),
+      ]);
+
+      const bono = res.bono;
+      const doc = generarPartePDF({
+        servicio: {
+          ...(res.servicio as Servicio),
+          firma_cliente: firmaCliente,
+          firma_tecnico: firmaTecnico,
+        },
+        clienteNombre: res.cliente?.nombre ?? "—",
+        numFactura: bono?.num_factura ?? "—",
+        horasRestantes: bono ? bono.horas_totales - bono.horas_usadas : 0,
+        horasTotales: bono?.horas_totales ?? 0,
+      });
+      doc.save(`${numParte}.pdf`);
+    } catch {
+      alert("No se pudo generar el PDF. Inténtalo de nuevo.");
+    } finally {
+      setDescargandoId(null);
+    }
+  }
 
   useEffect(() => {
     if (!token) {
@@ -141,6 +205,29 @@ function PortalContenido() {
                 {s.trabajador_nombre && <span className="muted"> · {s.trabajador_nombre}</span>}
               </div>
               <div style={{ fontSize: "0.85rem", color: "var(--text-soft)" }}>{s.descripcion}</div>
+
+              {s.editado && (
+                <div style={{ fontSize: "0.75rem", color: "var(--warn)", marginTop: "0.5rem" }}>
+                  Modificado con posterioridad a la firma
+                </div>
+              )}
+
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.75rem" }}>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  disabled={descargandoId === s.id}
+                  onClick={() => descargarPDF(s.id, s.num_parte)}
+                >
+                  {descargandoId === s.id ? (
+                    <span className="spinner" />
+                  ) : (
+                    <>
+                      <Download size={14} strokeWidth={2.25} />
+                      Descargar parte
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           ))}
         </div>

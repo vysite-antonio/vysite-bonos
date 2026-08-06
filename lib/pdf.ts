@@ -196,7 +196,10 @@ export function generarPartePDF(d: DatosPDF): jsPDF {
   }
 
   // FIRMAS
-  if (y + 65 > ph - 20) {
+  // El bloque de firmas ocupa ~65mm; si además hay que imprimir el aviso de
+  // modificación posterior, hacen falta ~13mm más antes del pie de página.
+  const altoFirmas = s.editado ? 78 : 65;
+  if (y + altoFirmas > ph - 20) {
     doc.addPage();
     y = 15;
   }
@@ -248,6 +251,30 @@ export function generarPartePDF(d: DatosPDF): jsPDF {
   doc.setTextColor(...C.grayText);
   doc.text(d.clienteNombre, m + sigW / 2, nameY, { align: "center" });
   doc.text(s.trabajador_nombre || "—", s2x + sigW / 2, nameY, { align: "center" });
+
+  // Si el parte se modificó después de firmarse, hay que decirlo: la firma de
+  // arriba corresponde a una versión anterior del documento. Ocultarlo sería
+  // justo lo que haría inservible el parte si algún día hay una discrepancia.
+  if (s.editado) {
+    const partes: string[] = [];
+    if (s.editado_en) partes.push(new Date(s.editado_en).toLocaleString("es-ES"));
+    if (s.editado_por) partes.push(`por ${s.editado_por}`);
+    const detalle = partes.length ? ` (${partes.join(" ")})` : "";
+
+    const avisoY = nameY + 7;
+    doc.setFillColor(255, 247, 237);
+    doc.setDrawColor(245, 158, 11);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(m, avisoY, cw, 9, 2, 2, "FD");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.5);
+    doc.setTextColor(146, 64, 14);
+    doc.text(
+      `Documento modificado con posterioridad a la firma${detalle}.`,
+      m + 4,
+      avisoY + 5.8
+    );
+  }
 
   // PIE
   doc.setDrawColor(...C.blue);

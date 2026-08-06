@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Download, Ban } from "lucide-react";
+import { Download, Ban, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 import { generarPartePDF } from "@/lib/pdf";
 import { resolverFirmaParaPdf } from "@/lib/firmas";
+import { EditarServicio } from "@/components/EditarServicio";
 import type { Servicio, Cliente, Bono } from "@/lib/types";
 
 const POR_PAGINA = 25;
@@ -15,7 +16,8 @@ const POR_PAGINA = 25;
 const COLUMNAS_LISTA =
   "id, num_parte, bono_id, cliente_id, trabajador_id, trabajador_nombre, tipo, modalidad, " +
   "fecha, hora_inicio, hora_fin, horas, descripcion, material, firmante_nombre, creado_por, creado_en, " +
-  "anulado, anulado_motivo, anulado_por, anulado_en, clientes(nombre), bonos(num_factura)";
+  "anulado, anulado_motivo, anulado_por, anulado_en, editado, editado_en, editado_por, " +
+  "clientes(nombre), bonos(num_factura)";
 
 export default function Historial() {
   const supabase = createClient();
@@ -28,6 +30,7 @@ export default function Historial() {
   const [hayMas, setHayMas] = useState(true);
   const [pagina, setPagina] = useState(0);
   const [anulandoId, setAnulandoId] = useState<string | null>(null);
+  const [editandoId, setEditandoId] = useState<string | null>(null);
 
   const mesActual = new Date().toISOString().slice(0, 7);
   const [filtroCliente, setFiltroCliente] = useState("");
@@ -146,6 +149,29 @@ export default function Historial() {
     doc.save(`${s.num_parte}.pdf`);
   }
 
+  // Tras editar, el parte puede haber cambiado de horas: refrescamos también el
+  // bono para que el resto de la pantalla (y el aviso de horas restantes del
+  // propio formulario) refleje el saldo real y no el de antes del cambio.
+  async function trasEditar(actualizado: Servicio) {
+    setServicios((prev) =>
+      prev.map((x) => (x.id === actualizado.id ? { ...x, ...actualizado } : x))
+    );
+    setEditandoId(null);
+
+    if (actualizado.bono_id) {
+      const { data: bonoActualizado } = await supabase
+        .from("bonos")
+        .select("*")
+        .eq("id", actualizado.bono_id)
+        .single();
+      if (bonoActualizado) {
+        setBonos((prev) =>
+          prev.map((b) => (b.id === actualizado.bono_id ? (bonoActualizado as Bono) : b))
+        );
+      }
+    }
+  }
+
   async function anular(s: Servicio) {
     const motivo = prompt(
       `Vas a anular el parte ${s.num_parte}.\n\nEsto devolverá ${s.horas}h al bono (si tenía uno asignado) y no se puede deshacer.\n\nIndica el motivo:`
@@ -228,7 +254,17 @@ export default function Historial() {
       ) : (
         <>
           <div style={{ display: "grid", gap: "0.9rem" }}>
-            {filtrados.map((s) => (
+            {filtrados.map((s) =>
+              editandoId === s.id ? (
+                <div key={s.id} className="card card-accent">
+                  <EditarServicio
+                    servicio={s}
+                    bono={bonos.find((b) => b.id === s.bono_id)}
+                    onGuardado={trasEditar}
+                    onCancelar={() => setEditandoId(null)}
+                  />
+                </div>
+              ) : (
               <div
                 key={s.id}
                 className="card"
@@ -263,6 +299,15 @@ export default function Historial() {
                       <Download size={14} strokeWidth={2.25} />
                       PDF
                     </button>
+                    {esAdmin && !s.anulado && (
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => setEditandoId(s.id)}
+                      >
+                        <Pencil size={14} strokeWidth={2.25} />
+                        Editar
+                      </button>
+                    )}
                     {esAdmin && !s.anulado && (
                       <button
                         className="btn btn-danger btn-sm"
@@ -321,6 +366,20 @@ export default function Historial() {
                   {s.descripcion}
                 </div>
 
+                {s.editado && !s.anulado && (
+                  <div
+                    style={{
+                      marginTop: "0.6rem",
+                      fontSize: "0.78rem",
+                      color: "var(--warn)",
+                    }}
+                  >
+                    Modificado tras la firma
+                    {s.editado_en && <> el {new Date(s.editado_en).toLocaleString("es-ES")}</>}
+                    {s.editado_por && <> por {s.editado_por}</>}
+                  </div>
+                )}
+
                 {s.anulado && (
                   <div
                     style={{
@@ -337,7 +396,8 @@ export default function Historial() {
                   </div>
                 )}
               </div>
-            ))}
+              )
+            )}
           </div>
 
           {hayMas && !cargando && (

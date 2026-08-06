@@ -59,6 +59,11 @@ export interface Servicio {
   anulado_motivo: string | null;
   anulado_por: string | null;
   anulado_en: string | null;
+  // Traza de edición posterior a la firma. Si editado es true, el PDF lo
+  // indica: el cliente firmó una versión anterior del documento.
+  editado: boolean;
+  editado_en: string | null;
+  editado_por: string | null;
   clientes?: { nombre: string } | null;
   bonos?: { num_factura: string } | null;
 }
