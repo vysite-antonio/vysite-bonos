@@ -8,3 +8,6 @@ _datos_eliminados/
 
 .vercel
 .env*
+
+# artefacto de compilacion incremental de TypeScript
+tsconfig.tsbuildinfo
