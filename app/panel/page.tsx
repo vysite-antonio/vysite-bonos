@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Gauge, PlusCircle } from "lucide-react";
+import { Gauge, PlusCircle, Zap } from "lucide-react";
 import { createClient } from "@/lib/supabase-server";
 import type { Bono } from "@/lib/types";
 import { medidorBono } from "@/lib/format";
@@ -85,10 +85,16 @@ export default async function Inicio() {
         }}
       >
         <h2>Bonos por cliente</h2>
-        <Link href="/panel/nuevo-servicio" className="btn btn-primary btn-sm">
-          <PlusCircle size={16} strokeWidth={2.25} />
-          Registrar servicio
-        </Link>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+          <Link href="/panel/parte-rapido" className="btn btn-ghost btn-sm">
+            <Zap size={16} strokeWidth={2.25} />
+            Parte rápido
+          </Link>
+          <Link href="/panel/nuevo-servicio" className="btn btn-primary btn-sm">
+            <PlusCircle size={16} strokeWidth={2.25} />
+            Registrar servicio
+          </Link>
+        </div>
       </div>
 
       {lista.length === 0 ? (

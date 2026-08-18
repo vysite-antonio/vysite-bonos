@@ -52,6 +52,24 @@ de poder recuperarse desde la papelera).
 `components/admin/AdminPapelera.tsx` (pestaña Admin > Papelera) llama a
 `purgar_papelera()` cada vez que se abre, antes de listar lo que hay.
 
+## Parte rápido (clientes sin bono)
+
+`/panel/parte-rapido` (`components/FormParteRapido.tsx`) es un flujo mínimo
+para clientes puntuales o que todavía no tienen un bono de horas contratado.
+Usa dos funciones que ya existían en la base de datos desde antes pero no se
+llamaban desde ningún sitio del frontend:
+
+- `crear_cliente_rapido(nombre, cif, direccion, telefono, email)` — solo el
+  nombre es obligatorio; se puede invocar sin salir del formulario del parte.
+- `registrar_servicio_suelto(...)` — igual que `registrar_servicio` pero
+  inserta el parte con `bono_id = null`, sin tocar ningún bono. Aplica la
+  misma regla de horas facturables (`calcular_horas_facturables`) que el
+  flujo normal.
+
+El PDF (`lib/pdf.ts`) detecta `horasTotales <= 0` y omite el bloque "ESTADO
+DEL BONO" en vez de dividir por cero. La firma sigue siendo obligatoria,
+igual que en un parte con bono.
+
 ## Tipos TypeScript del esquema
 
 `lib/database.types.ts` está generado, no se edita a mano. Es el `Database`

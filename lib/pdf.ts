@@ -131,37 +131,45 @@ export function generarPartePDF(d: DatosPDF): jsPDF {
 
   y += boxH + 6;
 
-  // ESTADO DEL BONO
-  const pct = Math.min((1 - d.horasRestantes / d.horasTotales) * 100, 100);
-  doc.setFillColor(...C.grayBg);
-  doc.roundedRect(m, y, cw, 14, 3, 3, "F");
-  doc.setDrawColor(...C.grayLine);
-  doc.roundedRect(m, y, cw, 14, 3, 3, "S");
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6.5);
-  doc.setTextColor(...C.grayText);
-  doc.text("ESTADO DEL BONO", c1, y + 5);
+  // ESTADO DEL BONO — solo si el servicio tiene un bono asociado. Un parte
+  // rápido (registrar_servicio_suelto) no tiene bono: pintar el medidor con
+  // horasTotales = 0 daría una división por cero, así que directamente se
+  // omite todo el bloque.
+  const sinBono = !d.horasTotales || d.horasTotales <= 0;
+  if (!sinBono) {
+    const pct = Math.min((1 - d.horasRestantes / d.horasTotales) * 100, 100);
+    doc.setFillColor(...C.grayBg);
+    doc.roundedRect(m, y, cw, 14, 3, 3, "F");
+    doc.setDrawColor(...C.grayLine);
+    doc.roundedRect(m, y, cw, 14, 3, 3, "S");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(6.5);
+    doc.setTextColor(...C.grayText);
+    doc.text("ESTADO DEL BONO", c1, y + 5);
 
-  const bx = c1,
-    by = y + 8,
-    bw = cw - 60,
-    bh = 4;
-  doc.setFillColor(...C.grayLine);
-  doc.roundedRect(bx, by, bw, bh, 2, 2, "F");
-  if (pct > 0) {
-    doc.setFillColor(...(pct > 85 ? C.red : C.blue));
-    doc.roundedRect(bx, by, Math.max((bw * pct) / 100, 3), bh, 2, 2, "F");
+    const bx = c1,
+      by = y + 8,
+      bw = cw - 60,
+      bh = 4;
+    doc.setFillColor(...C.grayLine);
+    doc.roundedRect(bx, by, bw, bh, 2, 2, "F");
+    if (pct > 0) {
+      doc.setFillColor(...(pct > 85 ? C.red : C.blue));
+      doc.roundedRect(bx, by, Math.max((bw * pct) / 100, 3), bh, 2, 2, "F");
+    }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(...C.darkText);
+    doc.text(
+      `${d.horasRestantes.toFixed(1)}h restantes de ${d.horasTotales}h`,
+      bx + bw + 4,
+      by + 3
+    );
+
+    y += 20;
+  } else {
+    y += 4;
   }
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.setTextColor(...C.darkText);
-  doc.text(
-    `${d.horasRestantes.toFixed(1)}h restantes de ${d.horasTotales}h`,
-    bx + bw + 4,
-    by + 3
-  );
-
-  y += 20;
 
   // ACTUACIÓN
   doc.setFont("helvetica", "normal");

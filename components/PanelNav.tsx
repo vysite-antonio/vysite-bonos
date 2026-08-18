@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, PlusCircle, History, ShieldCheck, LogOut } from "lucide-react";
+import { Home, PlusCircle, Zap, History, ShieldCheck, LogOut } from "lucide-react";
 
 interface Props {
   nombre: string;
@@ -12,6 +12,7 @@ interface Props {
 const ICONOS = {
   "/panel": Home,
   "/panel/nuevo-servicio": PlusCircle,
+  "/panel/parte-rapido": Zap,
   "/panel/historial": History,
   "/panel/admin": ShieldCheck,
 } as const;
@@ -22,6 +23,7 @@ export function PanelNav({ nombre, esAdmin }: Props) {
   const enlaces = [
     { href: "/panel", label: "Inicio" },
     { href: "/panel/nuevo-servicio", label: "Nuevo" },
+    { href: "/panel/parte-rapido", label: "Rápido" },
     { href: "/panel/historial", label: "Historial" },
     ...(esAdmin ? [{ href: "/panel/admin", label: "Admin" }] : []),
   ];
