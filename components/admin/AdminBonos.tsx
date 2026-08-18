@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PackagePlus, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 import type { Cliente, Bono } from "@/lib/types";
+import { medidorBono } from "@/lib/format";
 
 export function AdminBonos({
   clientes,
@@ -96,9 +97,7 @@ export function AdminBonos({
       ) : (
         <div style={{ display: "grid", gap: "0.75rem" }}>
           {bonos.map((b) => {
-            const rem = b.horas_totales - b.horas_usadas;
-            const pct = (b.horas_usadas / b.horas_totales) * 100;
-            const nivel = pct > 85 ? "danger" : pct > 65 ? "warn" : "";
+            const { restantes: rem, pct, nivel } = medidorBono(b);
             return (
               <div key={b.id} className="card">
                 <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", marginBottom: "0.75rem" }}>

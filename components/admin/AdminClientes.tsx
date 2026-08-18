@@ -4,6 +4,7 @@ import { useState } from "react";
 import { UserPlus, Link2, RefreshCw, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 import type { Cliente } from "@/lib/types";
+import { formatFechaHora } from "@/lib/format";
 
 export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
   const supabase = createClient();
@@ -121,7 +122,7 @@ export function AdminClientes({ inicial }: { inicial: Cliente[] }) {
                 </div>
                 {c.token_generado_en && (
                   <div className="muted" style={{ fontSize: "0.74rem", marginTop: 2 }}>
-                    Token generado: {new Date(c.token_generado_en).toLocaleString("es-ES")}
+                    Token generado: {formatFechaHora(c.token_generado_en)}
                   </div>
                 )}
               </div>

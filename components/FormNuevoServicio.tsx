@@ -9,6 +9,7 @@ import { generarPartePDF } from "@/lib/pdf";
 import { calcularHorasFacturables, minutosEntre } from "@/lib/horas";
 import { subirFirma } from "@/lib/firmas";
 import type { Cliente, Bono, Perfil, Modalidad } from "@/lib/types";
+import { formatFecha } from "@/lib/format";
 
 interface Props {
   clientes: Cliente[];
@@ -178,7 +179,7 @@ export function FormNuevoServicio({
               vars: {
                 cliente: cliente.nombre,
                 num_parte: data.num_parte,
-                fecha: fecha.split("-").reverse().join("/"),
+                fecha: formatFecha(fecha),
                 horas: horas.toFixed(2),
                 tecnico: trabajador?.nombre ?? usuarioActual.nombre,
               },

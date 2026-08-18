@@ -30,7 +30,16 @@ export function AdminUsuarios({ inicial }: { inicial: Perfil[] }) {
       setError(data?.error ?? error?.message ?? "Error al crear usuario");
       return;
     }
-    setUsuarios([...usuarios, { id: data.id, nombre: nombre.trim(), rol: rol as Perfil["rol"], activo: true }]);
+    setUsuarios([
+      ...usuarios,
+      {
+        id: data.id,
+        nombre: nombre.trim(),
+        rol: rol as Perfil["rol"],
+        activo: true,
+        creado_en: new Date().toISOString(),
+      },
+    ]);
     alert(`Usuario creado.\nEmail: ${email}\nContraseña: ${password}\n\nAnota la contraseña.`);
     setNombre("");
     setEmail("");

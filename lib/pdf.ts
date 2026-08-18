@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 import type { Servicio } from "./types";
 import { LOGO_VYSITE_PNG, LOGO_VYSITE_RATIO } from "./logo";
+import { formatFecha, formatFechaHora } from "./format";
 
 interface DatosPDF {
   servicio: Servicio;
@@ -124,7 +125,7 @@ export function generarPartePDF(d: DatosPDF): jsPDF {
   doc.line(m + 4, fy - 2, pw - m - 4, fy - 2);
 
   fy += 3;
-  const fecha = s.fecha.split("-").reverse().join("/");
+  const fecha = formatFecha(s.fecha);
   campo(c1, fy, "Fecha", fecha, colW);
   campo(c2, fy, "Horario", `${s.hora_inicio} – ${s.hora_fin}  (${s.horas}h)`, colW);
 
@@ -257,7 +258,7 @@ export function generarPartePDF(d: DatosPDF): jsPDF {
   // justo lo que haría inservible el parte si algún día hay una discrepancia.
   if (s.editado) {
     const partes: string[] = [];
-    if (s.editado_en) partes.push(new Date(s.editado_en).toLocaleString("es-ES"));
+    if (s.editado_en) partes.push(formatFechaHora(s.editado_en));
     if (s.editado_por) partes.push(`por ${s.editado_por}`);
     const detalle = partes.length ? ` (${partes.join(" ")})` : "";
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Gauge, PlusCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase-server";
 import type { Bono } from "@/lib/types";
+import { medidorBono } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -97,10 +98,7 @@ export default async function Inicio() {
       ) : (
         <div style={{ display: "grid", gap: "0.9rem" }}>
           {lista.map((b) => {
-            const restantes = b.horas_totales - b.horas_usadas;
-            const pctUsado = (b.horas_usadas / b.horas_totales) * 100;
-            const nivel =
-              pctUsado > 85 ? "danger" : pctUsado > 65 ? "warn" : "";
+            const { restantes, pct: pctUsado, nivel } = medidorBono(b);
             return (
               <div key={b.id} className="card">
                 <div

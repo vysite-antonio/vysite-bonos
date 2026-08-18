@@ -52,6 +52,22 @@ de poder recuperarse desde la papelera).
 `components/admin/AdminPapelera.tsx` (pestaña Admin > Papelera) llama a
 `purgar_papelera()` cada vez que se abre, antes de listar lo que hay.
 
+## Tipos TypeScript del esquema
+
+`lib/database.types.ts` está generado, no se edita a mano. Es el `Database`
+que produce el MCP de Supabase (`generate_typescript_types`) a partir del
+esquema real de `xmbolgxnljbugmyvuxzm`. `lib/types.ts` construye los tipos que
+usa el resto de la app (`Cliente`, `Bono`, `Servicio`, `Perfil`) a partir de
+ahí con el helper `Tables<"tabla">`, añadiendo solo lo que la BD no expresa:
+las uniones literales (`rol`, `tipo`, `modalidad`) y los campos de join que
+llegan al hacer `select("*, clientes(nombre)")` pero no son columnas reales.
+
+Después de cualquier migración que cambie columnas o funciones RPC, hay que
+regenerar `lib/database.types.ts`: MCP de Supabase → `generate_typescript_types`
+(project_id `xmbolgxnljbugmyvuxzm`) → pegar el resultado tal cual (sin tocar
+el comentario de cabecera) → revisar que `lib/types.ts` siga compilando
+(`npx tsc --noEmit`).
+
 ## Recordatorio sobre la regla de facturación
 
 Las horas facturables se calculan en dos sitios que tienen que decir siempre lo

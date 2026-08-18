@@ -7,6 +7,7 @@ import { generarPartePDF } from "@/lib/pdf";
 import { resolverFirmaParaPdf } from "@/lib/firmas";
 import { EditarServicio } from "@/components/EditarServicio";
 import type { Servicio, Cliente, Bono } from "@/lib/types";
+import { formatFecha, formatFechaHora } from "@/lib/format";
 
 const POR_PAGINA = 25;
 
@@ -339,7 +340,7 @@ export default function Historial() {
                 >
                   <span>
                     <span className="muted">Fecha </span>
-                    <span className="dato">{s.fecha.split("-").reverse().join("/")}</span>
+                    <span className="dato">{formatFecha(s.fecha)}</span>
                   </span>
                   <span>
                     <span className="muted">Horas </span>
@@ -375,7 +376,7 @@ export default function Historial() {
                     }}
                   >
                     Modificado tras la firma
-                    {s.editado_en && <> el {new Date(s.editado_en).toLocaleString("es-ES")}</>}
+                    {s.editado_en && <> el {formatFechaHora(s.editado_en)}</>}
                     {s.editado_por && <> por {s.editado_por}</>}
                   </div>
                 )}
@@ -391,7 +392,7 @@ export default function Historial() {
                     <strong>Motivo de anulación:</strong> {s.anulado_motivo ?? "—"}
                     {s.anulado_por && <> · anulado por {s.anulado_por}</>}
                     {s.anulado_en && (
-                      <> · {new Date(s.anulado_en).toLocaleString("es-ES")}</>
+                      <> · {formatFechaHora(s.anulado_en)}</>
                     )}
                   </div>
                 )}

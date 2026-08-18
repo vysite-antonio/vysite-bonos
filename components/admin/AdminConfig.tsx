@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Mail, Send } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
+import { formatFechaCorta } from "@/lib/format";
 
 interface ConfigEmail {
   brevo_api_key?: string;
@@ -68,7 +69,7 @@ export function AdminConfig() {
         vars: {
           cliente: "Cliente de prueba",
           num_parte: "PT-PRUEBA",
-          fecha: new Date().toLocaleDateString("es-ES"),
+          fecha: formatFechaCorta(new Date().toISOString()),
           horas: "1.00",
           tecnico: "—",
         },

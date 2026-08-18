@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Trash2, RotateCcw, PackageOpen } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 import type { Bono, Servicio } from "@/lib/types";
+import { formatFechaCorta } from "@/lib/format";
 
 const DIAS_RECUPERACION = 30;
 
@@ -123,7 +124,7 @@ export function AdminPapelera() {
                       Factura {b.num_factura} · {b.horas_totales}h
                     </div>
                     <div className="muted" style={{ fontSize: "0.78rem", marginTop: "0.25rem" }}>
-                      Eliminado {b.eliminado_en ? new Date(b.eliminado_en).toLocaleDateString("es-ES") : "—"}
+                      Eliminado {b.eliminado_en ? formatFechaCorta(b.eliminado_en) : "—"}
                       {b.eliminado_por && <> por {b.eliminado_por}</>}
                     </div>
                     {restantes > 0 ? (
@@ -186,7 +187,7 @@ export function AdminPapelera() {
                       {p.num_parte} · {p.horas}h
                     </div>
                     <div className="muted" style={{ fontSize: "0.78rem", marginTop: "0.25rem" }}>
-                      Anulado {p.anulado_en ? new Date(p.anulado_en).toLocaleDateString("es-ES") : "—"}
+                      Anulado {p.anulado_en ? formatFechaCorta(p.anulado_en) : "—"}
                       {p.anulado_por && <> por {p.anulado_por}</>}
                       {p.anulado_motivo && <> · {p.anulado_motivo}</>}
                     </div>

@@ -6,6 +6,7 @@ import { Gauge, Download } from "lucide-react";
 import { createClient } from "@/lib/supabase-browser";
 import { generarPartePDF } from "@/lib/pdf";
 import type { Servicio } from "@/lib/types";
+import { formatFecha, medidorBono } from "@/lib/format";
 
 interface PortalData {
   cliente: { nombre: string; email: string };
@@ -162,9 +163,7 @@ function PortalContenido() {
       ) : (
         <div style={{ display: "grid", gap: "0.9rem", marginBottom: "2rem" }}>
           {data.bonos.map((b) => {
-            const rem = b.horas_totales - b.horas_usadas;
-            const pct = (b.horas_usadas / b.horas_totales) * 100;
-            const nivel = pct > 85 ? "danger" : pct > 65 ? "warn" : "";
+            const { restantes: rem, pct, nivel } = medidorBono(b);
             return (
               <div key={b.id} className="card">
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.9rem" }}>
@@ -200,7 +199,7 @@ function PortalContenido() {
                 <span className="dato" style={{ fontWeight: 600 }}>{s.horas}h</span>
               </div>
               <div style={{ fontSize: "0.82rem", marginBottom: "0.5rem" }}>
-                <span className="dato">{s.fecha.split("-").reverse().join("/")}</span>
+                <span className="dato">{formatFecha(s.fecha)}</span>
                 <span className="muted"> · {s.hora_inicio}–{s.hora_fin}</span>
                 {s.trabajador_nombre && <span className="muted"> · {s.trabajador_nombre}</span>}
               </div>
