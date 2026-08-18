@@ -269,7 +269,16 @@ export default function Historial() {
               <div
                 key={s.id}
                 className="card"
-                style={s.anulado ? { opacity: 0.6 } : undefined}
+                style={{
+                  ...(s.anulado ? { opacity: 0.6 } : null),
+                  // Parte "rápido" (sin bono asociado): franja ámbar a la
+                  // izquierda para distinguirlo de un vistazo en la lista.
+                  // boxShadow en vez de border para que respete las esquinas
+                  // redondeadas de .card sin dejar un pico cuadrado.
+                  ...(!s.bono_id
+                    ? { boxShadow: "inset 3px 0 0 0 var(--warn), var(--shadow-sm)" }
+                    : null),
+                }}
               >
                 <div
                   style={{
@@ -295,6 +304,7 @@ export default function Historial() {
                     </div>
                   </div>
                   <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                    {!s.bono_id && <span className="badge badge-warn">SIN BONO</span>}
                     {s.anulado && <span className="badge badge-danger">ANULADO</span>}
                     <button className="btn btn-ghost btn-sm" onClick={() => descargarPDF(s)}>
                       <Download size={14} strokeWidth={2.25} />
